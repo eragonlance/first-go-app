@@ -8,8 +8,7 @@ RUN go mod download
 
 COPY ./cmd/appserver .
 
-RUN --mount=type=cache,target=~/.cache/go-build \
-    go build -o app .
+RUN go build -ldflags="-s -w" -trimpath -o app .
 
 FROM scratch
 
