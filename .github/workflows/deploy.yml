@@ -53,4 +53,8 @@ jobs:
           gcloud run deploy $SERVICE \
             --image=${{ steps.vars.outputs.IMAGE_URI }} \
             --region=$REGION \
-            --port 8000
+            --port 8000 \
+            --set-env-vars=\
+              DEPLOYED=1,\
+              GIT_REF=${{ github.ref }},\
+              GIT_SHA=${{ github.sha }}
