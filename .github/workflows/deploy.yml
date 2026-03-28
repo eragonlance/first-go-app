@@ -1,6 +1,6 @@
 name: Deploy
 run-name: Started by ${{ github.actor }} on ${{ github.sha }}
-on: [workflow_dispatch]
+on: [ workflow_dispatch ]
 
 env:
   PROJECT_ID: project-e4630cc5-50d8-49ce-912

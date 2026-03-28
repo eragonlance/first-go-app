@@ -9,14 +9,7 @@ import (
 )
 
 func main() {
-	app := fiber.New()
-
-	// Define a route for the GET method on the root path '/'
-	app.Get("/", func(c fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
-	app.Get("/version", getVersion)
-
+	app := setup()
 	log.Fatal(app.Listen(":8000"))
 }
 
@@ -28,4 +21,14 @@ func getVersion(c fiber.Ctx) error {
 	ref := os.Getenv("GIT_REF")
 	sha := os.Getenv("GIT_SHA")
 	return c.SendString(fmt.Sprintf("%s\n%s", ref, sha))
+}
+
+func setup() *fiber.App {
+	app := fiber.New()
+
+	app.Get("/", func(c fiber.Ctx) error {
+		return c.SendString("Hello, World 👋!")
+	})
+	app.Get("/version", getVersion)
+	return app
 }

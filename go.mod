@@ -2,7 +2,10 @@ module first-go-app
 
 go 1.26.1
 
-require github.com/gofiber/fiber/v3 v3.1.0
+require (
+	github.com/go-jose/go-jose/v4 v4.1.3
+	github.com/gofiber/fiber/v3 v3.1.0
+)
 
 require (
 	github.com/andybalholm/brotli v1.2.0 // indirect
