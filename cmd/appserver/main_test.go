@@ -17,7 +17,7 @@ func TestGetVersion(t *testing.T) {
 		{"", "", "", "Applicable for deployed only."},
 	}
 
-	app := setup()
+	app := setup("test")
 	for _, test := range tests {
 		t.Setenv("GIT_REF", test.ref)
 		t.Setenv("GIT_SHA", test.sha)
