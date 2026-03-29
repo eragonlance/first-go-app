@@ -1,1 +1,1 @@
-https://first-go-app-317647722496.asia-southeast1.run.app
+https://first-go-app-5tqp6rddda-as.a.run.app
