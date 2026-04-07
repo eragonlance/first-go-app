@@ -1,0 +1,16 @@
+name: Test
+run-name: Started by ${{ github.actor }} on ${{ github.sha }}
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          sparse-checkout: cmd
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - run: go test -cover ./cmd/...

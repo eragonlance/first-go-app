@@ -1,0 +1,59 @@
+name: Deploy
+run-name: Started by ${{ github.actor }} on ${{ github.sha }}
+on: [workflow_dispatch]
+
+env:
+  PROJECT_ID: project-e4630cc5-50d8-49ce-912
+  WORKLOAD_IDENTITY_PROVIDER: projects/317647722496/locations/global/workloadIdentityPools/table-extractor/providers/github-provider
+  REGION: asia-southeast1
+  ARTIFACT_REPO: builds
+  IMAGE_NAME: first-go-app
+  SERVICE: first-go-app
+  DOCKER_BUILD_RECORD_UPLOAD: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          sparse-checkout: cmd
+
+      - uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Configure Docker auth
+        run: gcloud auth configure-docker --quiet $REGION-docker.pkg.dev
+
+      - name: Set up pre-build
+        id: vars
+        run: |
+          IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/$IMAGE_NAME"
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_OUTPUT
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.vars.outputs.IMAGE_URI }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy
+        run: |
+          gcloud run deploy $SERVICE \
+            --image=${{ steps.vars.outputs.IMAGE_URI }} \
+            --region=$REGION \
+            --port 8000 \
+            --set-env-vars="DEPLOYED=1,\
+            GIT_REF=${{ github.ref }},\
+            GIT_SHA=${{ github.sha }}"
